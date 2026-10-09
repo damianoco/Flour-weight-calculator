@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flour weights</title>
+<style>
+  :root {
+    --bg: #f3efe6;
+    --ink: #2b2a26;
+    --muted: #6d6a60;
+    --line: #cfc8b8;
+    --field: #fffdf8;
+    --accent: #3d5a47;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 2rem 1rem;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.5;
+  }
+  main { max-width: 34rem; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  p.note { margin: 0 0 1.5rem; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; }
+  caption {
+    text-align: left;
+    font-size: 1.15rem;
+    font-weight: bold;
+    padding-bottom: .5rem;
+  }
+  th, td { padding: .6rem .5rem; border-bottom: 1px solid var(--line); text-align: left; }
+  thead th { font-weight: normal; color: var(--muted); font-size: .9rem; }
+  td.pct { font-variant-numeric: tabular-nums; }
+  tr.total th, tr.total td { font-weight: bold; border-bottom: 0; border-top: 2px solid var(--ink); }
+  input[type="number"] {
+    width: 100%;
+    max-width: 9rem;
+    padding: .45rem .5rem;
+    font: inherit;
+    background: var(--field);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  input[type="number"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button {
+    margin-top: 1rem;
+    padding: .45rem .9rem;
+    font: inherit;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Flour weights</h1>
+  <p class="note">Enter a weight for any flour. The other two fill in to match the mix.</p>
+
+  <table id="diy1">
+    <caption>DIY 1</caption>
+    <thead>
+      <tr><th scope="col">Flour</th><th scope="col">Proportion</th><th scope="col">Weight (g)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>White rice flour</td>
+        <td class="pct">50%</td>
+        <td><input type="number" min="0" step="any" inputmode="decimal" data-pct="50" aria-label="White rice flour weight in grams"></td>
+      </tr>
+      <tr>
+        <td>Potato starch</td>
+        <td class="pct">30%</td>
+        <td><input type="number" min="0" step="any" inputmode="decimal" data-pct="30" aria-label="Potato starch weight in grams"></td>
+      </tr>
+      <tr>
+        <td>Maize flour</td>
+        <td class="pct">20%</td>
+        <td><input type="number" min="0" step="any" inputmode="decimal" data-pct="20" aria-label="Maize flour weight in grams"></td>
+      </tr>
+      <tr class="total">
+        <th scope="row">Total</th>
+        <td class="pct">100%</td>
+        <td><input type="number" min="0" step="any" inputmode="decimal" data-pct="100" aria-label="Total weight in grams"></td>
+      </tr>
+    </tbody>
+  </table>
+  <button type="button" id="clear">Clear</button>
+</main>
+
+<script>
+  const inputs = Array.from(document.querySelectorAll('#diy1 input'));
+
+  inputs.forEach(function (source) {
+    source.addEventListener('input', function () {
+      const value = parseFloat(source.value);
+      const others = inputs.filter(function (i) { return i !== source; });
+
+      if (isNaN(value) || value < 0) {
+        others.forEach(function (i) { i.value = ''; });
+        return;
+      }
+
+      const total = value / (parseFloat(source.dataset.pct) / 100);
+      others.forEach(function (i) {
+        const w = total * (parseFloat(i.dataset.pct) / 100);
+        i.value = Math.round(w * 100) / 100;
+      });
+    });
+  });
+
+  document.getElementById('clear').addEventListener('click', function () {
+    inputs.forEach(function (i) { i.value = ''; });
+    inputs[0].focus();
+  });
+</script>
+</body>
+</html>
